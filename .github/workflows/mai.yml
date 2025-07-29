@@ -1,0 +1,25 @@
+name: Basic Ci
+
+on:
+  push: 
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build: 
+    runs-on: ubuntu-latest
+
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Print Repo info
+      run: |
+        echo "Repositry: ${{ hithub.repository }}"
+        echo "Branch: ${{ github.ref }}"
+        echo "Commit: ${{ github.sha }}"
+    - name: List
+      run : find . -type f -name "*.js" | head -10
+    

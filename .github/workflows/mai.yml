@@ -17,7 +17,7 @@ jobs:
 
     - name: Print Repo info
       run: |
-        echo "Repositry: ${{ hithub.repository }}"
+        echo "Repositry: ${{ github.repository }}"
         echo "Branch: ${{ github.ref }}"
         echo "Commit: ${{ github.sha }}"
     - name: List

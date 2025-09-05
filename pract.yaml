@@ -1,0 +1,69 @@
+name: CD - Hybrid Deployment
+
+on:
+  workflow_dispatch:   # one-click manual deploy
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      # Checkout infra repo (this one)
+      - name: Checkout infra
+        uses: actions/checkout@v4
+
+      # Checkout each microservice repo
+      - name: Checkout Frontend
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/frontend
+          token: ${{ secrets.GH_PAT }}
+          ref: main
+
+      - name: Checkout Backend
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/backend
+          token: ${{ secrets.GH_PAT }}
+          ref: main
+
+      - name: Checkout AI Service
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/ai
+          token: ${{ secrets.GH_PAT }}
+          ref: main
+
+      # Collect all manifests into one folder
+      - name: Collect manifests
+        run: |
+          mkdir all-k8s
+          cp -r kubernetes/* all-k8s/ || true
+          cp -r /home/ubuntu/action-runner/_work/infra/infra/frontend/kubernetes/* all-k8s/ || true
+          cp -r /home/ubuntu/action-runner/_work/infra/infra/backend/kubernetes/* all-k8s/ || true
+          cp -r /home/ubuntu/action-runner/_work/infra/infra/ai/kubernetes/* all-k8s/ || true
+
+      - name: Run setup Script
+        run: bash install-kube.sh
+
+      # (Optional) configure AWS/K8s secrets if needed
+      - name: Configure AWS Secret
+        run: |
+          kubectl delete secret aws-credentials --ignore-not-found
+          kubectl create secret generic aws-credentials \
+            --from-literal=accesskey=${{ secrets.AWS_ACCESS_KEY_ID }} \
+            --from-literal=secretkey=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Apply all manifests at once
+      - name: Apply Kubernetes manifests
+        run: kubectl apply -R -f all-k8s/
+
+      # Verify rollouts service by service
+      - name: Verify Frontend rollout
+        run: kubectl rollout status deployment/frontend-deployment
+
+      - name: Verify Backend rollout
+        run: kubectl rollout status deployment/backend-deployment
+
+      - name: Verify AI rollout
+        run: kubectl rollout status deployment/ai-deployment

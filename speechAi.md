@@ -23,23 +23,25 @@ It combines **speech recognition**, **natural language processing (NLP)**, and *
    - Breaking down audio into frames  
    - Fourier Transform & Spectrograms  
 
-3. **Acoustic Modeling**  
+3. **Acoustic Modeling**
+   - statistical representation of the relationship between audio signals and the phonetic units of spee
    - Maps audio features to phonemes  
    - Compares extracted features with trained phoneme patterns  
-   - Predicts which phonemes are spoken  
+   - Predicts which phonemes are spoken
+   -   compares these features with its trained patterns of phonemes to predict what phonemes are being spoken.
 
-4. **Language Modeling (Context & Grammar)**  
+5. **Language Modeling (Context & Grammar)**  
    - Helps choose the correct word sequence  
    - **Example:**  
      - Acoustic model hears: *“wreck a nice beach”*  
      - Language model corrects: *“recognize speech”*  
 
-5. **Decoder (Final Speech-to-Text)**  
+6. **Decoder (Final Speech-to-Text)**  
    - Combines acoustic model + language model  
    - Outputs the most likely transcription  
    - **Example:** *“Book me a flight from Delhi to Bangalore tomorrow morning.”*  
 
-6. **NLP & Intent Recognition**  
+7. **NLP & Intent Recognition**  
    - Understands the meaning of the transcribed text  
    - Tasks: Tokenization, POS tagging, entity recognition  
    - Intent classification → `BookFlight`  
@@ -49,7 +51,7 @@ It combines **speech recognition**, **natural language processing (NLP)**, and *
      - Date = Tomorrow  
      - Time = Morning  
 
-7. **Text-to-Speech (TTS)**  
+8. **Text-to-Speech (TTS)**  
    - Converts text back into speech for system response  
    - **Steps:**  
      - Text Normalization → *“7 AM” → “seven a.m.”*  
